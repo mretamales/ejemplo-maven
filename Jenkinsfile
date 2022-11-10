@@ -46,7 +46,7 @@ pipeline {
                 echo '.....Source code packaging completed'
             }
         }
-        stage('SonarQube analysis') {
+        stage('sonar') {
             steps {
                 echo 'Sonar scan in progress.....'
                 withSonarQubeEnv(credentialsId: '22f7a5b8-3425-4d58-a9e9-2326e6749326', installationName: 'sonarqube') {
@@ -54,12 +54,11 @@ pipeline {
                         if(isUnix()) {
                             echo 'Unix OS'
                                 sh './mvnw clean verify sonar:sonar \
-                                     -Dsonar.projectKey=ms-iclab'
+                                     -Dsonar.projectKey=example-maven2'
                         } else {
                             echo 'Windows OS'
                                 bat 'mvnw clean verify sonar:sonar \
-                                    -Dsonar.projectKey=ms-iclab'
-
+                                    -Dsonar.projectKey=example-maven2'
                         }
                         echo '.....Sonar scan completed'
                     }
