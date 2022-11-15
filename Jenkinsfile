@@ -75,10 +75,10 @@ pipeline {
                 script {
                     pom = readMavenPom file: "pom.xml";
                     files = findFiles(glob: "build/*.${pom.packaging}");
-                    echo """${files[0].name}
-                            ${files[0].path}
-                            ${files[0].directory}
-                            ${files[0].length}
+                    echo """${files[0].name},
+                            ${files[0].path},
+                            ${files[0].directory},
+                            ${files[0].length},
                             ${files[0].lastModified}"""
                     artifactPath = files[0].path;
                     artifactExists = fileExists artifactPath;
@@ -109,6 +109,13 @@ pipeline {
                     } else {
                         error "File: ${artifactPath}, could not be found";
                     }
+                }
+            }
+        }
+        stage('download & test') {
+            steps {
+                script {
+                    echo "Downloading artifact from nexus"
                 }
             }
         }
