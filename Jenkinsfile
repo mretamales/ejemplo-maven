@@ -3,6 +3,7 @@ pipeline {
      environment {
         NEXUS_INSTANCE_ID = "nexus"
         NEXUS_REPOSITORY = "devops-usach-nexus"
+        NEXUS_SERVER = "nexus:8081"
     }
     stages {
         stage('compile') {
@@ -114,8 +115,17 @@ pipeline {
         }
         stage('download & test') {
             steps {
-                script {
-                    echo "Downloading artifact from nexus"
+                withCredentials([usernamePassword(credentialsId: 'acd50057-3abc-4c5b-a062-758a404e0bb9',
+                                                  usernameVariable: 'USER', passwordVariable: 'PASS')]) {
+                    script {
+                        echo "Downloading artifact from nexus"
+                        pom = readMavenPom file: "pom.xml";
+                        groupId = pom.groupId;
+                        echo """${pom.groupId}""";
+                        groupIdPath = groupId.replace(".", "/");
+                        echo """${groupIdPath}""";
+                        sh """curl -X GET -u $USER:$PASS http://${env.NEXUS_SERVER}/repository/${env.NEXUS_REPOSITORY}/${groupIdPath}/${pom.artifactId}/${pom.version}/${pom.artifactId}-${pom.version}.${pom.packaging} -O"""
+                    }
                 }
             }
         }
